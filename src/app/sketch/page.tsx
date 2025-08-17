@@ -6,8 +6,19 @@ import { OrbitControls, ContactShadows, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const MODEL_URL = `${BASE_PATH}/models/hotel.glb`;
+// Prefer a relative path so it works when the app is mounted under a sub-path (e.g. "/sketch").
+// If NEXT_PUBLIC_BASE_PATH is provided (e.g. "/sketch"), prefix with it; otherwise use a relative path.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH;
+const buildAssetUrl = (relativePath: string) => {
+  const sanitizedRelative = relativePath.replace(/^\//, "");
+  if (BASE_PATH && BASE_PATH !== "/") {
+    const sanitizedBase = BASE_PATH.replace(/\/$/, "");
+    return `${sanitizedBase}/${sanitizedRelative}`;
+  }
+  return sanitizedRelative;
+};
+
+const MODEL_URL = buildAssetUrl("models/hotel.glb");
 
 type BoundsInfo = {
   radius: number;
