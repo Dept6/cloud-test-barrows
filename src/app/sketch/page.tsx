@@ -65,6 +65,15 @@ function Scene() {
 
   return (
     <>
+      {/* Scene background */}
+      <color attach="background" args={["#171819"]} />
+      {/* Distance fog to suggest infinite ground */}
+      {(() => {
+        const fogNear = Math.max(bounds.radius * 2, 10);
+        const fogFar = Math.max(bounds.radius * 16, 160);
+        return <fog attach="fog" args={["#171819", fogNear, fogFar]} />;
+      })()}
+
       {/* Lights */}
       <ambientLight intensity={0.5} />
       <directionalLight
@@ -80,10 +89,10 @@ function Scene() {
         <HotelModel onBounds={onBounds} />
       </Suspense>
 
-      {/* Ground receiving shadows */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[bounds.radius * 10, bounds.radius * 10]} />
-        <meshStandardMaterial color="#e6e6e6" />
+      {/* Infinite-like ground plane directly under model */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.001, 0]} receiveShadow>
+        <planeGeometry args={[10000, 10000]} />
+        <meshStandardMaterial color="#171819" />
       </mesh>
 
       <ContactShadows
@@ -106,8 +115,10 @@ function Scene() {
         enablePan={false}
         minPolarAngle={0.1}
         maxPolarAngle={Math.PI / 2 - 0.05}
-        minDistance={bounds.radius * 1.2}
-        maxDistance={bounds.radius * 5}
+        /* Allow slightly closer zoom-in, but clamp aggressively */
+        minDistance={Math.max(bounds.radius * 0.9, 1)}
+        /* Increase how far you can zoom out to reach a "minimum detail" threshold */
+        maxDistance={bounds.radius * 1.25}
       />
     </>
   );
@@ -115,7 +126,7 @@ function Scene() {
 
 export default function Page() {
   return (
-    <main style={{ width: "100%", height: "100vh" }}>
+    <main style={{ width: "100%", height: "100vh", backgroundColor: "#171819" }}>
       <Canvas
         shadows
         onCreated={({ camera }) => {
