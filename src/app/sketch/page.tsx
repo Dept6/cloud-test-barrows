@@ -6,6 +6,9 @@ import { OrbitControls, ContactShadows, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const MODEL_URL = `${BASE_PATH}/models/hotel.glb`;
+
 type BoundsInfo = {
   radius: number;
   center: THREE.Vector3;
@@ -13,7 +16,7 @@ type BoundsInfo = {
 
 function HotelModel({ onBounds }: { onBounds: (b: BoundsInfo) => void }) {
   const groupRef = useRef<THREE.Group>(null);
-  const gltf = useGLTF("/models/hotel.glb");
+  const gltf = useGLTF(MODEL_URL);
 
   // After the model loads, fit its bottom to y=0 and report bounds
   React.useLayoutEffect(() => {
@@ -39,7 +42,7 @@ function HotelModel({ onBounds }: { onBounds: (b: BoundsInfo) => void }) {
   );
 }
 
-useGLTF.preload("/models/hotel.glb");
+useGLTF.preload(MODEL_URL);
 
 function Scene() {
   const [bounds, setBounds] = useState<BoundsInfo>({
